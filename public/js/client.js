@@ -10,10 +10,12 @@ $(function() {
                 $('#cube').remove();
             })
             .then(() => {
-                previousBlock(height);
+                $('#experiment').append(cube);
+                $('#cube').hide();
             })
             .then(() => {
-                $('#experiment').append(cube);
+                previousBlock(height);
+                $('#cube').show();
             })
         })
     });
@@ -73,11 +75,13 @@ $(function() {
 });
 
 function start(){
-    deleteOnStart();
-    currentHeightDB()
-        .then((block) => {
-            renderBlockInfo(block.height);
-    });
+    deleteOnStart()
+        .then(() => {
+            currentHeightDB()
+                .then((block) => {
+                    renderBlockInfo(block.height);
+            })
+        })
 }
 
 function moveUp() {
@@ -171,7 +175,6 @@ function addButtonClasses(){
 function renderBlockInfo(height) {
     //so that we can't click buttons mid-load
     removeButtonClasses();
-
     blockInfo(height)
         .then(function(res){
             addButtonClasses();
@@ -225,7 +228,6 @@ function renderBlockInfo(height) {
         .catch(function(error) {
             console.error("Couldn't append blockheader info");
         });  
-
 }
 
 const genesisBlock = function() {   
@@ -389,8 +391,7 @@ function currentHeightDB() {
 }
 
 function deleteOnStart() {
-
- return Promise.resolve(
+    return Promise.resolve(
         latestBlockHeight()
             .then(function(height) {
                 $.ajax({
@@ -412,35 +413,8 @@ function deleteOnStart() {
             })
             .catch(function(err){
                 console.error("Failed in deleteOnStart: ", err);
-        })
+            })
     )
-
-
-    // latestBlockHeight()
-    //     .then((height) => {
-    //         return Promise.resolve(
-    //             $.ajax({
-    //                 async: true,
-    //                 crossDomain: true,
-    //                 url: "/delete-and-instantiate",
-    //                 contentType: 'application/json; charset=utf-8',
-    //                 method: "delete",
-    //                 data: JSON.stringify({
-    //                     height: height
-    //                 })
-    //             })
-    //             .done(function(data){
-    //                 return data;
-    //             })
-    //             .fail(function(jqXHR, textStatus, errorThrown) {
-    //                 console.error("Failed on deleteOnStart: ", jqXHR, textStatus, errorThrown)
-    //             })
-    //         )
-    //     })
-    //     .catch(function(err){
-    //         console.error("Failed in deleteOnStart: ", err);
-    //     }
-    // )
 }
 
 const cube =          
