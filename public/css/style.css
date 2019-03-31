@@ -1,0 +1,137 @@
+.goto {
+  margin: 0.25rem;
+  border-radius: 0.25rem;
+  width: 10%;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+.buttons-footer {
+  position:fixed;
+  left:0px;
+  bottom:0px;
+  height:60px;
+  width:100%;
+  background:#999;
+  width: 100%;
+/*  flexbox  */
+  position: absolute;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: row;
+  justify-content:  space-evenly;
+
+  margin-bottom: 0.5rem;
+}
+
+/* IE 6 */
+* html .buttons-footer {
+   position:absolute;
+   top:expression((0-(footer.offsetHeight)+(document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight)+(ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop))+'px');
+}
+
+/*Face five - block header info*/
+.blockinfo-container {
+  width: 100%;
+}
+
+.blockinfo .label {
+  text-decoration: underline;
+}
+
+.blockinfo .number-line {
+  margin-top:.22rem;
+}
+
+.blockinfo-container li {
+  overflow-wrap: break-word;
+  margin: 0.5rem;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.bitcoin-img {
+  margin-bottom: 2.5%;
+}
+
+
+/*Animation*/
+.move-down {
+  animation-duration: 1s;
+  animation-name: slidedown;
+  -webkit-transition: -webkit-transform 1s linear;
+  -webkit-transform-style: preserve-3d;
+  -moz-transition: -moz-transform 1s linear;
+  -moz-transform-style: preserve-3d;
+  transition: transform 1s linear;
+  transform-style: preserve-3d;
+}
+
+@keyframes slidedown {
+  from {
+    margin-top: 0%;
+  }
+
+  to {
+    margin-top: -50%;
+  }
+}
+
+.move-up {
+  animation-duration: 1s;
+  animation-name: slideup;
+  -webkit-transition: -webkit-transform 1s linear;
+  -webkit-transform-style: preserve-3d;
+  -moz-transition: -moz-transform 1s linear;
+  -moz-transform-style: preserve-3d;
+  transition: transform 1s linear;
+  transform-style: preserve-3d;
+}
+
+@keyframes slideup{
+  from {
+    margin-top: 100px;
+  }
+
+  to {
+    margin-top: 50%;
+  }
+}
+
+.appear {
+  animation-duration: 1s;
+  animation-name: apear;
+  -webkit-transition: -webkit-transform 1s linear;
+  -webkit-transform-style: preserve-3d;
+  -moz-transition: -moz-transform 1s linear;
+  -moz-transform-style: preserve-3d;
+  transition: transform 1s linear;
+  transform-style: preserve-3d;
+}
+
+@keyframes apear {
+  from {
+    margin-top: 50%;
+  }
+
+  to {
+    margin-top: 0%;
+  }
+}
