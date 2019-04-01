@@ -115,7 +115,7 @@ app.get('/latest-block-height', (req, res) => {
 });
 
 app.get('/block-info/:height', (req, res, next) => {
-  let url = `/get-current-difficulty`;
+  let url = `http://localhost:8080/get-current-difficulty`;
   //get difficulty
   rp(url)
   .then(function(body){
