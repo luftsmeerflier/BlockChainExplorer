@@ -111,13 +111,13 @@
   }
 
   to {
-    margin-top: 50%;
+    margin-top: 70%;
   }
 }
 
 .appear {
   animation-duration: 1s;
-  animation-name: apear;
+  animation-name: appear;
   -webkit-transition: -webkit-transform 1s linear;
   -webkit-transform-style: preserve-3d;
   -moz-transition: -moz-transform 1s linear;
@@ -126,7 +126,7 @@
   transform-style: preserve-3d;
 }
 
-@keyframes apear {
+@keyframes appear {
   from {
     margin-top: 50%;
   }
