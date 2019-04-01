@@ -9,7 +9,7 @@ const request = require('request');
 mongoose.Promise = global.Promise;
 
 const { PORT, DATABASE_URL } = require('./config');
-const { BlockHeight } = require("../mongoose/models");
+const { BlockHeight } = require("./models");
 // const { NextBlock } = require('./next-block.js')
 
 const app = express();
