@@ -115,35 +115,30 @@ app.get('/latest-block-height', (req, res) => {
 });
 
 app.get('/block-info/:height', (req, res, next) => {
-  let url = `/get-current-difficulty`;
-  //get difficulty
-  rp(url)
-  .then(function(body){
-    let difficulty = body;
-    let blockInfoOptions = new Options(`https://blockchain.info/block-height/${req.params.height}?format=json`)
-    //get the other info
-    rp(blockInfoOptions)
-    .then(function (body) {
-      let obj = JSON.parse(body);
-      obj = obj.blocks[0];  
-      delete obj['tx'];
-      res.json({
-        "header" : {
-          "version" : obj.ver,
-          "previous_hash" : obj.prev_block,
-          "merkle_root" : obj.mrkl_root,
-          "time" : obj.time,
-          "bits" : obj.bits,
-          "nonce" : obj.nonce
-        },
-        "info" : {
-          "hash" : obj.hash,
-          "prev_block" : obj.prev_block,
-          "next_block" : obj['next_block'][0],
-          "difficulty" : difficulty,
-          "height" : obj.height
-        }
-      })
+  let difficulty = req.body.difficulty;
+  let blockInfoOptions = new Options(`https://blockchain.info/block-height/${req.params.height}?format=json`)
+  //get the other info
+  rp(blockInfoOptions)
+  .then(function (body) {
+    let obj = JSON.parse(body);
+    obj = obj.blocks[0];  
+    delete obj['tx'];
+    res.json({
+      "header" : {
+        "version" : obj.ver,
+        "previous_hash" : obj.prev_block,
+        "merkle_root" : obj.mrkl_root,
+        "time" : obj.time,
+        "bits" : obj.bits,
+        "nonce" : obj.nonce
+      },
+      "info" : {
+        "hash" : obj.hash,
+        "prev_block" : obj.prev_block,
+        "next_block" : obj['next_block'][0],
+        "difficulty" : difficulty,
+        "height" : obj.height
+      }
     })
   })
   .catch(function (err) {

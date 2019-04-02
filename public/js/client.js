@@ -123,7 +123,9 @@ const blockValidation = function(verb){
                                 resolve(nextBlock); 
                         });
                     } else if (verb == 'previous') {
-                        blockInfo(currentHeightInDB)
+                        currentDifficulty()
+                        .then((difficulty) => {
+                            blockInfo(currentHeightInDB, difficulty)
                             .then(function(block){
                                 if (block.info.height == 0) {
                                     alert('There are no blocks prior to the genesis block.');
@@ -131,6 +133,7 @@ const blockValidation = function(verb){
                                 };
                                 let prevHeight = currentHeightInDB - 1;
                                 resolve(prevHeight);
+                            });
                         });
                     } else if (verb == 'genesis') {
                         if(currentHeightInDB == 0){
@@ -175,7 +178,9 @@ function addButtonClasses(){
 function renderBlockInfo(height) {
     //so that we can't click buttons mid-load
     removeButtonClasses();
-    blockInfo(height)
+    currentDifficulty()
+    .then((difficulty) => {
+        blockInfo(height, difficulty)
         .then(function(res){
             addButtonClasses();
             $('.five').empty();
@@ -228,6 +233,7 @@ function renderBlockInfo(height) {
         .catch(function(error) {
             console.error("Couldn't append blockheader info");
         });  
+    });
 }
 
 const genesisBlock = function() {   
@@ -352,12 +358,12 @@ function updateBlockHeight(height) {
 }
 
 // might eventually make one generic call, with method strings as parameters
-function blockInfo(height) {
+function currentDifficulty() {
     return Promise.resolve(
         $.ajax({
             async: true,
             crossDomain: true,
-            url: `/block-info/${height}`,
+            url: `/get-current-difficulty`,
             method: "GET"
         })
         .done(function(data){
@@ -368,16 +374,19 @@ function blockInfo(height) {
             console.log('textStatus', textStatus);
             console.log('errorThrown', errorThrown);
         })
-    );
+    )
 }
 
-function currentHeightDB() {
+function blockInfo(height, difficulty) {
     return Promise.resolve(
         $.ajax({
             async: true,
             crossDomain: true,
-            url: "/current-height-db",
-            method: "GET"
+            url: `/block-info/${height}`,
+            method: "GET",
+            data : {
+                difficulty : JSON.stringify(difficulty)
+            }
         })
         .done(function(data){
             return data
