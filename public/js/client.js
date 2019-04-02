@@ -361,8 +361,7 @@ function blockInfo(height) {
             method: "GET"
         })
         .done(function(data){
-            //return data
-            console.log(data)
+            return data
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
             console.log('jqXHR', jqXHR);
