@@ -42,44 +42,61 @@ class Options {
   }
 }
 
-//const blockHeight = require('./models/BlockHeight');
 app.get('/current-height-db', function (req, res, next) {
     BlockHeight
     .findOne()
-    .then(block => res.json({
-        height: block.height,
-    }))
+    .then(block => {
+      res.json({
+        height: block.height
+      })
+    })
     .catch(err => {
         console.error(err)
-        res.status(500).json({message: 'Something went wrong'})}
+        res.status(500).json({message: 'Something went wrong in current-height-db'})}
     );
 });
 
-app.delete('/delete-and-instantiate', function(req, res, next){
-
-  BlockHeight.findOneAndDelete({}, function (err, block){
-    if(err) { 
-      throw err; 
-    }
-  });
-
-  let height = { "height" : req.body.height };
-  let blockheight = new BlockHeight(height);
-  blockheight.save(function (err) {
-      if (err) return handleError(err);
-      res.status(200).end(); 
-  })
+app.get('/latest-block-height', (req, res) => {
+  let blockHeightUrl = `https://blockchain.info/q/getblockcount`;
+  const blockHeightOptions = new Options(blockHeightUrl);
+  rp(blockHeightOptions)
+    .then(function (height) {
+      res.send(height);
+    })
+    .catch(function (err) {
+      res.status(500).json({ message: "Internal server error; failed in outside call" });
+    });
 });
 
 
 
-
-
-
-
-
-
-  
+app.delete('/delete-and-instantiate', function(req, res, next){
+  const requiredFields = ["height"];
+  for (let i = 0; i < requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+  BlockHeight.findOne({}, (err, obj) => {
+    if(obj == null){
+      BlockHeight.create({
+        height : req.body.height
+      })
+      .then(block => res.status(200).json(block));
+    }
+    else {
+      BlockHeight.findOneAndDelete({}, function (err, oldBlock){
+        if(err) { 
+          throw err; 
+        }
+      })
+      .then(res.status(201));
+    }
+  })
+});
 
 app.put('/update-height', function (req, res, next) {
   const requiredFields = ['height'];
@@ -100,18 +117,6 @@ app.put('/update-height', function (req, res, next) {
       res.send(block);
   });  
 
-});
-
-app.get('/latest-block-height', (req, res) => {
-  let blockHeightUrl = `https://blockchain.info/q/getblockcount`;
-  const blockHeightOptions = new Options(blockHeightUrl);
-  rp(blockHeightOptions)
-    .then(function (height) {
-      res.send(height);
-    })
-    .catch(function (err) {
-      res.status(500).json({ message: "Internal server error; failed in outside call" });
-    });
 });
 
 app.get('/block-info/:height', (req, res, next) => {

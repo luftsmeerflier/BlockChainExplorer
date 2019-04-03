@@ -76,11 +76,13 @@ $(function() {
 
 function start(){
     deleteOnStart()
-        .then(() => {
+        .then((block) => {
             currentHeightDB()
                 .then((block) => {
+                    // if (block.height == height) { console.log("HOORAY")}
                     renderBlockInfo(block.height);
-            })
+                    // renderBlockInfo(height);
+            })  
         })
 }
 
@@ -223,7 +225,7 @@ function renderBlockInfo(height) {
                     <ul class="blockinfo">
                         <li><span class="label">Block height:</span> ${res.info.height}</li>
                         <li><span class="label">Current block:</span> ${res.info.hash}</li>
-                        <li><span class="label">Next block:</span> ${res.info.next_block}</li>
+                        <li><span class="label">Next block:</span> ${res.info.next_block || "In progress"}</li>
                         <li><span class="label">Previous block:</span> ${res.info.prev_block}</a></li>
                     </ul>
                 </div>
@@ -296,8 +298,8 @@ const latestBlock = function(latestHeight) {
 
 
 // Use latestBlockHeight, latestBlockHeight for valdation
-function currentHeightDB(currentHeight) {
-    return Promise.resolve(
+function currentHeightDB() {
+    return new Promise((resolve, reject) => {
         $.ajax({
             async: true,
             crossDomain: true,
@@ -305,33 +307,14 @@ function currentHeightDB(currentHeight) {
             method: "GET"
         })
         .done(function(data){
-            return data
+            resolve(data);
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
             console.log('jqXHR', jqXHR);
             console.log('textStatus', textStatus);
             console.log('errorThrown', errorThrown);
         })
-    );
-}
-
-function latestBlockHeight() {
-  return Promise.resolve(
-        $.ajax({
-            async: true,
-            crossDomain: true,
-            url: "/latest-block-height",
-            method: "GET"
-        })
-        .done(function(data){
-            return data
-        })
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log('jqXHR: ', jqXHR);
-            console.log('textStatus: ', textStatus);
-            console.log('errorThrown: ', errorThrown);
-        })
-    );
+    });
 }
 
 function updateBlockHeight(height) {
@@ -350,9 +333,9 @@ function updateBlockHeight(height) {
             return data
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log('jqXHR', jqXHR);
-            console.log('textStatus', textStatus);
-            console.log('errorThrown', errorThrown);
+            console.error('jqXHR', jqXHR);
+            console.error('textStatus', textStatus);
+            console.error('errorThrown', errorThrown);
         })
     );
 }
@@ -370,9 +353,9 @@ function currentDifficulty() {
             return data
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log('jqXHR', jqXHR);
-            console.log('textStatus', textStatus);
-            console.log('errorThrown', errorThrown);
+            console.error('jqXHR', jqXHR);
+            console.error('textStatus', textStatus);
+            console.error('errorThrown', errorThrown);
         })
     )
 }
@@ -392,15 +375,34 @@ function blockInfo(height, difficulty) {
             return data
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log('jqXHR', jqXHR);
-            console.log('textStatus', textStatus);
-            console.log('errorThrown', errorThrown);
+            console.error('jqXHR', jqXHR);
+            console.error('textStatus', textStatus);
+            console.error('errorThrown', errorThrown);
+        })
+    );
+}
+
+function latestBlockHeight() {
+  return Promise.resolve(
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            url: "/latest-block-height",
+            method: "GET"
+        })
+        .done(function(data){
+            return data
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('jqXHR: ', jqXHR);
+            console.error('textStatus: ', textStatus);
+            console.error('errorThrown: ', errorThrown);
         })
     );
 }
 
 function deleteOnStart() {
-    return Promise.resolve(
+    return new Promise((resolve, reject) => {
         latestBlockHeight()
             .then(function(height) {
                 $.ajax({
@@ -414,7 +416,7 @@ function deleteOnStart() {
                     })
                 })
                 .done(function(data){
-                    return data;
+                    resolve(data);
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
                     console.error("Failed on deleteOnStart: ", jqXHR, textStatus, errorThrown)
@@ -423,7 +425,7 @@ function deleteOnStart() {
             .catch(function(err){
                 console.error("Failed in deleteOnStart: ", err);
             })
-    )
+        })
 }
 
 const cube =          
