@@ -1,11 +1,11 @@
-
+/*
 
 .line-break {
 	overflow-wrap: break-word;
 }
 
 /*Original css*/
-.bitcoin-img {
+/*.bitcoin-img {
     padding: 5px;
     width: 255px;
     height: 255px;
@@ -36,7 +36,7 @@
 }
 
 .label {
-	text-decoration: underline;
+	text-decboration: underline;
 }
 
 * {
@@ -57,13 +57,13 @@
 
 
 
-
+*/
 
 
 
 
 /*Loader animation*/
-.lds-circle {
+/*.lds-circle {
   display: inline-block;
   transform: translateZ(1px);
 }
@@ -92,3 +92,4 @@
     transform: rotateY(3600deg);
   }
 }
+*/*/

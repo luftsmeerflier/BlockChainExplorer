@@ -12,13 +12,27 @@
 
     <link rel="canonical" href="https://paulrhayes.com/experiments/cube-3d/" />
     <link rel="stylesheet" href="/lib/experiment-styles.css" />
-    <link rel="stylesheet" href="/lib/css/experiment.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="/lib/css/experiment.css" /> 
+   <link rel="stylesheet" href="/lib/css/experiment.css" />
+
+    <link rel="stylesheet" type="text/css" href="/css/menu.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+
 
 </head>
 <body class="experiment">
     <div class="wrapper">
-
+        <header>
+            <nav>
+                <a href="#" id="menu-icon"></a>
+                <ul class='menu'>
+                    <li href="#" class="previous menu-element">Previous block</li>
+                    <li href="#" class="latest menu-element">Latest block</li>
+                    <li href="#" class="genesis menu-element">Genesis Block</li>
+                    <li href="#" class="next menu-element">Next block</li>
+                </ul>
+            </nav>
+        </header>
     <!--     code courtesy of paulrhayes: https://github.com/fofr/paulrhayes.com-experiments/tree/master/cube-3d/ -->
     <div id="experiment">
         <div id="cube">
@@ -46,12 +60,12 @@
 
     </div>
 
-    <footer class='buttons-footer'>
+<!--     <footer class='buttons-footer'>
         <button class="goto previous">Previous block</button>
         <button class="goto latest">Latest block</button>
         <button class="goto genesis">Genesis Block</button>
         <button class="goto next">Next block</button>
-    </footer>
+    </footer> -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="js/client.js"></script>
