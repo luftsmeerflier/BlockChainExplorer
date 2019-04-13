@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <!-- Article: https://paulrhayes.com/2009-07/animated-css3-cube-interface-using-3d-transforms/ -->
     <!-- Demo: https://paulrhayes.com/experiments/cube-3d/ -->
@@ -7,69 +7,36 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>Blockchain Storeye</title>
-    <meta name="author" content="Paul Hayes" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="canonical" href="https://paulrhayes.com/experiments/cube-3d/" />
-    <link rel="stylesheet" href="/lib/experiment-styles.css" />
-    <link rel="stylesheet" href="/lib/css/experiment.css" /> 
-   <link rel="stylesheet" href="/lib/css/experiment.css" />
-
-    <link rel="stylesheet" type="text/css" href="/css/menu.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
-
-
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body class="experiment">
-    <div class="wrapper">
-        <header>
-            <nav>
-                <a href="#" id="menu-icon"></a>
-                <ul class='menu'>
-                    <li href="#" class="previous menu-element">Previous block</li>
-                    <li href="#" class="latest menu-element">Latest block</li>
-                    <li href="#" class="genesis menu-element">Genesis Block</li>
-                    <li href="#" class="next menu-element">Next block</li>
-                </ul>
-            </nav>
-        </header>
-    <!--     code courtesy of paulrhayes: https://github.com/fofr/paulrhayes.com-experiments/tree/master/cube-3d/ -->
-    <div id="experiment">
-        <div id="cube">
-            <div class="face one">
-
-            </div>
-            <div class="face two">
-                <img src="../images/bitcoin.png" class="bitcoin-img">
-            </div>
-            <div class="face three">
-                
-            </div>
-            <div class="face four">
-
-            </div>
-            <div class="face five">
-
-            </div>
-            <div class="face six">
-
-            </div>
+    <div class="main" role="main">
+        <div class='screen-small-height' aria-level=1>
+            <h1 class="current-height" role="heading" aria-level=1>Latest height on blockchain: <span class="height"></span></h1>
+            <p class="current-block-db">Current block in-view:<span class="db-height"></span></p>
+            <p class="instructions">Click the arrow keys to navigate the blockchain</p>
+        </div>
+        <div class="wrap">
+            <section class='cube-content'></section>
         </div>
     </div>
-    <!--    Copied code ends here     -->
 
-    </div>
-
-<!--     <footer class='buttons-footer'>
-        <button class="goto previous">Previous block</button>
-        <button class="goto latest">Latest block</button>
-        <button class="goto genesis">Genesis Block</button>
-        <button class="goto next">Next block</button>
-    </footer> -->
+    <footer role="contentinfo" class='buttons-footer'>
+        <button class="goto previous"> << </button>
+        <div class="input">
+            <button class="reset" style="display: none">Reset</button>
+            <form class="form" name="myForm" id="find-block" method="post">
+                <label for="block-num" class="block-num">Block #:</label>
+                <input type="text" aria-label="input a blockheight number" name="fname">
+                <label for="submit" style="display:none">Block #:</label>
+                <input type="submit" value="Go!">
+            </form>
+        </div>
+        <button class="goto next"> >> </button>
+    </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="js/client.js"></script>
-    <script src="/lib/js/experiment.js"></script>
-    <script src="/lib/js/touch.js"></script>
 </body>
 </html>

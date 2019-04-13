@@ -71,6 +71,7 @@ app.get('/latest-block-height', (req, res) => {
 
 
 app.delete('/delete-and-instantiate', function(req, res, next){
+  //Takes a height and then makes sure there's one DB entry using it
   const requiredFields = ["height"];
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -85,15 +86,27 @@ app.delete('/delete-and-instantiate', function(req, res, next){
       BlockHeight.create({
         height : req.body.height
       })
-      .then(block => res.status(200).json(block));
+      .then(block => res.status(200).json(block))
+      .catch(function (err) {
+        res.status(500).json({ message: "Couldn't create block entry from scratch" });
+      });
     }
     else {
       BlockHeight.findOneAndDelete({}, function (err, oldBlock){
         if(err) { 
           throw err; 
         }
+        BlockHeight.create({
+          height : req.body.height
+        })
+        .then(block => res.status(200).json(block))
+        .catch(function (err) {
+          res.status(500).json({ message: "Couldn't create block entry from scratch" });
+        });
       })
-      .then(res.status(201));
+        .catch(function (err) {
+        res.status(500).json({ message: "Couldn't delete and create block entry" });
+      });
     }
   })
 });

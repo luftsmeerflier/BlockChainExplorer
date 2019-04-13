@@ -1,3 +1,19 @@
+html {
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+body {
+  height: 80vh;
+}
+
+.input {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
 .goto {
   margin: 0.25rem;
   border-radius: 0.25rem;
@@ -6,6 +22,16 @@
 
 ::-webkit-scrollbar { 
     display: none; 
+}
+
+footer {
+  position: absolute;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
 }
 
 .buttons-footer {
@@ -25,6 +51,7 @@
   display: flex;
   flex-direction: row;
   justify-content:  space-evenly;
+
   margin-bottom: 0.5rem;
 }
 
@@ -35,6 +62,12 @@
 }
 
 /*Face five - block header info*/
+
+.bitcoin-logo {
+  margin-bottom: 2.5%;
+  outline: 1.5px solid #ff7f00;
+}
+
 .blockinfo-container {
   width: 100%;
 }
@@ -66,11 +99,6 @@
   display: table;
 }
 
-.bitcoin-img {
-  margin-bottom: 2.5%;
-}
-
-
 /*Animation*/
 .move-down {
   animation-duration: 1s;
@@ -89,7 +117,7 @@
   }
 
   to {
-    margin-top: -50%;
+    margin-top: 500px;
   }
 }
 
@@ -106,11 +134,11 @@
 
 @keyframes slideup{
   from {
-    margin-top: 100px;
+    margin-top: 0%;
   }
 
   to {
-    margin-top: 70%;
+    margin-top: 400%;
   }
 }
 
@@ -134,3 +162,121 @@
     margin-top: 0%;
   }
 }
+/*small cube*/
+.wrap {
+  perspective: 800px;
+  perspective-origin: 50% 100px;
+}
+
+.cube {
+  margin: 0 auto;
+  margin-top: 6%;
+  position: relative;
+  width: 200px;
+  transform-style: preserve-3d;
+}
+
+.cube div {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: orange;
+}
+
+.back {
+  transform: translateZ(-100px) rotateY(180deg);
+}
+.right {
+  transform: rotateY(-270deg) translateX(100px);
+  transform-origin: top right;
+}
+.left {
+  transform: rotateY(270deg) translateX(-100px);
+  transform-origin: center left;
+}
+.top {
+  transform: rotateX(-90deg) translateY(-100px);
+  transform-origin: top center;
+}
+.bottom {
+  transform: rotateX(90deg) translateY(100px);
+  transform-origin: bottom center;
+}
+.front {
+  transform: translateZ(100px);
+}
+
+.bitcoin-small {
+  max-width: 200px;
+}
+
+@keyframes slidedown {
+  from {
+    margin-top: 0%;
+  }
+
+  to {
+    margin-top: -500px;
+  }
+}
+
+
+@keyframes spin {
+  from { transform: rotateY(0); }
+  to { transform: rotateY(360deg); }
+}
+
+.cube {
+  animation: spin 5s 1 linear;
+}
+
+.screen-small-height {
+
+}
+
+.current-height, .screen-small-height p {
+  text-align: center;
+  background-color: black;
+  color: white;
+}
+
+.current-height {
+  font-size: 2rem;
+  padding: 0.75rem 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.screen-small-height p {
+  font-size: 1.25rem;
+  margin-top: 0;
+  padding-bottom: 0.25rem;
+}
+
+.block-num {
+  background-color: black;
+  color: white;
+  display: inline;
+  padding: 2px;
+  font-size: 1rem;
+}
+
+.restart {
+  display: block;
+  margin: 0 auto;
+}
+
+.current-block-db {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-text {
+  margin-top: 0;
+}
+
+.screen-small-height p {
+  margin-bottom: 0;
+}
+
+

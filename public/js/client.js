@@ -2,194 +2,222 @@
 
 $(function() {
     start();
-    $('.previous').on('click', function(){
-        blockValidation('previous')
-        .then((height) => {
-            moveDown()
-            .then(() => {
-                $('#cube').remove();
-            })
-            .then(() => {
-                $('#experiment').append(cube);
-                $('#cube').hide();
-            })
-            .then(() => {
-                previousBlock(height);
-                $('#cube').show();
-            })
-        })
-    });
-
-    $('.latest').on('click', function(){
-        blockValidation('latest')
-        .then((height) => {
-            moveUp()
-            .then(() => {
-                $('#cube').remove();
-            })
-            .then(() => {
-                $('#experiment').append(cube);
-                $('#cube').hide();
-            })
-            .then(() => {
-                latestBlock(height);
-                $('#cube').show();
-            })
-        })
-    });
-
-    $('.genesis').on('click', function(){
-        blockValidation('genesis')
-            .then((height) => {
-                moveDown()
-                .then(() => {
-                    $('#cube').remove();
-                })
-                .then(() => {
-                    $('#experiment').append(cube);
-                    $('#cube').hide();
-                })
-                .then(() => {
-                    genesisBlock(height);
-                    $('#cube').show();
-                })
-            })
-    });
     $('.next').on('click', function(){
-        blockValidation('next')
-            .then((height) => {
-                moveUp()
-                .then(() => {
-                    $('#cube').remove();
-                })
-                .then(() => {
-                    $('#experiment').append(cube);
-                    $('#cube').hide();
-                })
-                .then(() => {
-                    nextBlock(height);
-                    $('#cube').show();
-                })
+        latestBlockHeight()
+            .then((latestChainHeight)=>{
+                nextBlock(latestChainHeight);
+                $('.height').empty();
+                $('.height').text(latestChainHeight);
             })
+
+    });
+    $('.previous').on('click', function(){
+        previousBlock();
+        latestBlockHeight()
+        .then((height) => {
+            $('.height').empty();
+            $('.height').text(height);
+        });
     });
 });
 
-function start(){
-    deleteOnStart()
-        .then((block) => {
-            currentHeightDB()
-                .then((block) => {
-                    // if (block.height == height) { console.log("HOORAY")}
-                    renderBlockInfo(block.height);
-                    // renderBlockInfo(height);
-            })  
-        })
-}
-
-function moveUp() {
-    $('#cube').addClass('move-up');
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            $('#cube').remove();
-            resolve();
-        }, 1000);
-    });
-}
-
-function moveDown() {
-    $('#cube').addClass('move-down');
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            $('#cube').remove();
-            resolve();
-        }, 1000);
-    });
-}
-
-const blockValidation = function(verb){
-    return new Promise(
-        (resolve, reject) => {
-            currentHeightDB()
-                .then(function(DbBlock) {
-                    return DbBlock.height;
-                })
-                .then(function(currentHeightInDB) {
-                    if(verb == 'next'){
-                        latestBlockHeight()            
-                            .then(function(latestHeight) {
-                                if( latestHeight == currentHeightInDB) {
-                                    alert("Already at the most recent block");
-                                    return;
-                                };
-                                let nextBlock = currentHeightInDB + 1;
-                                resolve(nextBlock); 
-                        });
-                    } else if (verb == 'previous') {
-                        currentDifficulty()
-                        .then((difficulty) => {
-                            blockInfo(currentHeightInDB, difficulty)
-                            .then(function(block){
-                                if (block.info.height == 0) {
-                                    alert('There are no blocks prior to the genesis block.');
-                                    return;
-                                };
-                                let prevHeight = currentHeightInDB - 1;
-                                resolve(prevHeight);
-                            });
-                        });
-                    } else if (verb == 'genesis') {
-                        if(currentHeightInDB == 0){
-                            alert('already at the genesis block');
-                            return;
-                        } 
-                        let height = 0;
-                        resolve(height);
-                    } else if (verb == 'latest'){
-                        latestBlockHeight()
-                            .then(function(latestHeight){
-                                if( latestHeight == currentHeightInDB) {
-                                    alert("Already at the most recent block");
-                                    return;
-                                };
-                            resolve(latestHeight);  
-                        })
-                    } else {
-                        reject("error in blockValidation");
-                    }                          
+function previousBlock() {
+    currentHeightDB()
+    .then((block) => {
+        let currentHeight = block.height;
+        if (currentHeight == 0) {
+            alert("There are no blocks prior to the genesis block!");
+        } else {
+            moveDown()
+            .then(()=>{
+                $('.cube > *').remove();
+                let prevHeight = currentHeight - 1;
+                renderBlockInfo(prevHeight);     
+                updateDbHeight(prevHeight);
+                // $('.db-height').replaceWith(prevHeight);
             })
         }
-    )
+    })
+    .catch(function(error) {
+        console.error("Couldn't update height for next block:", error);
+    });
+}
+
+function nextBlock(currentChainHeight) {
+    currentHeightDB()
+    .then((block) => {
+        let height = block.height;
+        if(height == currentChainHeight){
+            alert("Already on the most recent block!");
+        } else {
+            moveUp()
+            .then(()=>{
+                $('.cube > *').remove();
+                let nextHeight = height + 1;
+                renderBlockInfo(nextHeight);
+                updateDbHeight(nextHeight);
+            })
+        }
+    })
+    .catch(function(error) {
+        console.error("Couldn't update height for next block:", error);
+    });
+}
+
+function start(){
+    if( !($('.cube').length )){
+        $('.cube-content').append(cube);
+    }
+    latestBlockHeight()
+        .then((latestHeight) => {
+            return latestHeight
+        })
+        .then((height)=>{
+            deleteOnStart(height)
+                .then((block) => {
+                    //current height in DB
+                    let height = block.height;
+                    $('.height').text(height);
+                    $('.db-height').text(height);
+                });
+        });
+}
+
+$('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
+    e.preventDefault();  //prevent form from submitting
+    $('.instructions').remove();
+    currentHeightDB()
+       .then((dbBlock) => {
+                let currentHeightDB = dbBlock.height;
+            latestBlockHeight()
+            .then((latestChainHeight) => {
+                let data = $("#find-block :input").serializeArray();
+                let value = data[0].value; //use the console for debugging, F12 in Chrome, not alerts
+                if(isNaN(value)){
+                    alert("please enter a valid number");
+                } else if(value > latestChainHeight){
+                    alert("That block hasn't been discovered!");
+                } else if (value < 0) {
+                    alert("There are no blocks prior to the genesis block!");
+                } else {
+                    if(value > currentHeightDB){
+                        moveUp()
+                        .then(() => {
+                            render(value);
+                        });
+                    } else {
+                        moveDown()
+                        .then(() => {
+                            render(value);
+                        });
+                    }
+                }
+            })
+        })
+        .catch(function(error) {
+            console.error("Couldn't append blockheader info");
+        });
+        function render(value){
+            $('.cube > *').remove();
+            renderBlockInfo(value);
+            updateDbHeight(value);
+        }
+});
+
+function updateOnChainElem(height){
+    $('.current-height').data('data-height-on-chain', height);
+}
+
+function updateDbElem(height){
+    $('.current-block-db').data('data-height-in-db', height);
+}
+
+function getHeightDB(){
+    return $('.current-block-db').data('height-in-db');
+}
+
+function getHeightOnChain(){
+    return $('.current-height').data('height-on-chain');
 }
 
 
+const cube = `        
+    <div class="cube">
+        <div class="front">
+            <img class="bitcoin-small" alt="bitcoin logo" src="../images/bitcoin.png">
+        </div>
+        <div class="back"></div>
+        <div class="top"></div>
+        <div class="bottom"></div>
+        <div class="left"></div>
+        <div class="right"></div>
+    </div>`;
 
-function removeButtonClasses(){
-    $(".buttons-footer button:nth-of-type(1)").removeClass("previous");
-    $(".buttons-footer button:nth-of-type(2)").removeClass("latest");
-    $(".buttons-footer button:nth-of-type(3)").removeClass("genesis");
-    $(".buttons-footer button:nth-of-type(4)").removeClass("next");
+function moveUp() {
+    $('.cube > *').addClass('move-up');
+
+    return new Promise(function(resolve) {
+        setTimeout(resolve, 1000);
+    });
 }
 
-function addButtonClasses(){
-    $(".buttons-footer button:nth-of-type(1)").addClass("previous");
-    $(".buttons-footer button:nth-of-type(2)").addClass("latest");
-    $(".buttons-footer button:nth-of-type(3)").addClass("genesis");
-    $(".buttons-footer button:nth-of-type(4)").addClass("next");
+
+function moveDown() {
+    $('.cube > *').addClass('move-down');
+    return new Promise(function(resolve) {
+        setTimeout(resolve, 1000);
+    });
+}
+
+$('.reset').on('click', function(){
+    $('.blockinfo-container').remove();
+    $('.reset').css('display', 'none');
+    $('.form').css('display', 'block');
+    $('.previous').css('display', 'block');
+    $('.next').css('display', 'block');
+    $('.cube-content').append(cube);
+});
+
+function currentHeightDB() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            url: "/current-height-db",
+            method: "GET"
+        })
+        .done(function(data){
+            resolve(data.height);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.log('jqXHR', jqXHR);
+            console.log('textStatus', textStatus);
+            console.log('errorThrown', errorThrown);
+        })
+    });
 }
 
 function renderBlockInfo(height) {
     //so that we can't click buttons mid-load
-    removeButtonClasses();
     currentDifficulty()
     .then((difficulty) => {
         blockInfo(height, difficulty)
         .then(function(res){
-            addButtonClasses();
-            $('.five').empty();
-            $('.five').append(`
-                <div class="blockinfo-container">
+                $('.blockinfo-container').remove();
+                $('.reset').css('display', 'block');
+                $('.form').css('display', 'none');
+                $('.previous').css('display', 'none');
+                $('.next').css('display', 'none');
+
+                $('.db-height').empty();
+                $('.db-height').text(height);
+
+
+ 
+                $('body').append(`
+                    <div class="blockinfo-container">
                     <ul class="blockinfo">
-                        <li class="pseudo-header">Block Header:</li>
+                        <h3 class="pseudo-header">Block Header:</h3>
                         <li>
                             <span class="label">version:</span>
                             ${res.header.version}
@@ -217,107 +245,16 @@ function renderBlockInfo(height) {
                         </li>
                     </ul>
                 </div>
-            `);
-
-            $('.three').empty();
-            $('.three').append(`
-                <div class="blockinfo-container">
-                    <ul class="blockinfo">
-                        <li><span class="label">Block height:</span> ${res.info.height}</li>
-                        <li><span class="label">Current block:</span> ${res.info.hash}</li>
-                        <li><span class="label">Next block:</span> ${res.info.next_block || "In progress"}</li>
-                        <li><span class="label">Previous block:</span> ${res.info.prev_block}</a></li>
-                    </ul>
-                </div>
-            `);
-            //now, we can click buttons again
+                `);
+            })
         })
         .catch(function(error) {
             console.error("Couldn't append blockheader info");
         });  
-    });
+    
 }
 
-const genesisBlock = function() {   
-    //Some validation, then render the genesis block after 'genesis block' button clicked
-    currentHeightDB()
-        .then(function(currentHeight){
-            if(currentHeight == 0){
-                alert('already at the genesis block');
-            } 
-        })
-        .catch(function(error) {
-            console.error("Couldn't get current height");
-        });
-
-    updateBlockHeight(0)
-        .then(function(genesisBlock){
-            //should expect height to equal 0 in testing
-            renderBlockInfo(genesisBlock.height)
-                // .then(function(data){
-                //     console.log("We will attach the following to HTML: ", data)
-                // });
-        })
-        .catch(function(error) {
-            console.error("Couldn't update block height. More: ", error);
-        });
-}
-
-const nextBlock = function(nextHeight) {
-    updateBlockHeight(nextHeight)
-        .then(function(block){
-            renderBlockInfo(block.height)
-        })
-        .catch(function(error) {
-            console.error("Couldn't update height for next block:", error);
-        });
-}
-
-const previousBlock = function(prevHeight) {
-    updateBlockHeight(prevHeight)
-        .then(function(prevBlock){
-            renderBlockInfo(prevBlock.height)
-        })
-        .catch(function(error) {
-            console.error("Couldn't update block height for previous block: ", error);
-        });
-}
-
-const latestBlock = function(latestHeight) {
-    updateBlockHeight(latestHeight)
-        .then(function(latestBlock){
-            renderBlockInfo(latestBlock.height);
-        })
-        .catch(function(error) {
-            console.error("Couldn't update height for the latest block:", error);
-        });
-}
-
-
-
-
-
-// Use latestBlockHeight, latestBlockHeight for valdation
-function currentHeightDB() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            async: true,
-            crossDomain: true,
-            url: "/current-height-db",
-            method: "GET"
-        })
-        .done(function(data){
-            resolve(data);
-        })
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            console.log('jqXHR', jqXHR);
-            console.log('textStatus', textStatus);
-            console.log('errorThrown', errorThrown);
-        })
-    });
-}
-
-function updateBlockHeight(height) {
+function updateDbHeight(height) {
     return Promise.resolve(
         $.ajax({
             async: true,
@@ -340,25 +277,27 @@ function updateBlockHeight(height) {
     );
 }
 
-// might eventually make one generic call, with method strings as parameters
-function currentDifficulty() {
-    return Promise.resolve(
+
+function currentHeightDB() {
+    return new Promise((resolve, reject) => {
         $.ajax({
             async: true,
             crossDomain: true,
-            url: `/get-current-difficulty`,
+            url: "/current-height-db",
             method: "GET"
         })
         .done(function(data){
-            return data
+            resolve(data);
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('jqXHR', jqXHR);
-            console.error('textStatus', textStatus);
-            console.error('errorThrown', errorThrown);
+            console.log('jqXHR', jqXHR);
+            console.log('textStatus', textStatus);
+            console.log('errorThrown', errorThrown);
         })
-    )
+    });
 }
+
+// might eventually make one generic call, with method strings as parameters
 
 function blockInfo(height, difficulty) {
     return Promise.resolve(
@@ -401,298 +340,92 @@ function latestBlockHeight() {
     );
 }
 
-function deleteOnStart() {
+function deleteOnStart(heightOnChain) {
     return new Promise((resolve, reject) => {
-        latestBlockHeight()
-            .then(function(height) {
-                $.ajax({
-                    async: true,
-                    crossDomain: true,
-                    url: "/delete-and-instantiate",
-                    contentType: 'application/json; charset=utf-8',
-                    method: "delete",
-                    data: JSON.stringify({
-                        height: height
-                    })
-                })
-                .done(function(data){
-                    resolve(data);
-                })
-                .fail(function(jqXHR, textStatus, errorThrown) {
-                    console.error("Failed on deleteOnStart: ", jqXHR, textStatus, errorThrown)
-                })
-            })
-            .catch(function(err){
-                console.error("Failed in deleteOnStart: ", err);
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            url: "/delete-and-instantiate",
+            contentType: 'application/json; charset=utf-8',
+            method: "delete",
+            data: JSON.stringify({
+                height: heightOnChain
             })
         })
+        .done(function(data){
+            resolve(data);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("Failed on deleteOnStart: ", jqXHR, textStatus, errorThrown)
+        })
+    });
 }
 
-const cube =          
-    `<div id="cube">
-        <div class="face one"></div>
-        <div class="face two"><img src="../images/bitcoin.png" class="bitcoin-img"></div>
-        <div class="face three"></div>
-        <div class="face four"></div>
-        <div class="face five"></div>
-        <div class="face six"></div>
-    </div>`;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function genesis() {   
-//     updateBlock({
-//       url: '/update-height',
-//       type: 'put',
-//       contentType: 'application/json; charset=utf-8',
-//       data: JSON.stringify({
-//         height: 0
-//       })
-//     }).then(
-//       function fulfillHandler(data) {
-//         alert(data);
-//       },
-//       function rejectHandler(jqXHR, textStatus, errorThrown) {
-//         console.error("jqXHR", jqXHR)
-//         console.error("textStatus", textStatus)
-//         console.error("errorThrown", errorThrown)
-//       }
-//     ).catch(function errorHandler(error) {
-//       res.send("Couldn't update block")
-//     });
-// }
-
-
-
-
-// clicked(box)
-//     .then(response => {
-//         $(box).remove();
-//         let newHeight = Number(currentHeight) - 1; // this becomes the 
-//         sessionStorage.setItem('blockHeight', newHeight);
-//     })
-//     .then(response => {
-//         let currentHeight = sessionStorage.getItem('blockHeight');
-//         render(currentHeight);
-//     })
-
-
-// function clicked(box){
-//     return new Promise(function(resolve, reject) {
-//         $.ajax(options).done(resolve).fail(reject);
-//     });
-// }
-
-
-
-// function currentBlockHeight() {   
-//     ajax({
-//       url: '/current-height',
-//       type: 'get'
-//     }).then(
-//       function fulfillHandler(data) {
-//         return data;
-//       },
-//       function rejectHandler(jqXHR, textStatus, errorThrown) {
-//         console.error("jqXHR", jqXHR)
-//         console.error("textStatus", textStatus)
-//         console.error("errorThrown", errorThrown)
-//       }
-//     ).catch(function errorHandler(error) {
-//       console.error("Couldn't get current block height")
-//     });
-// }
-
-// function ajax(options) {
-//   return new Promise(function (resolve, reject) {
-//     $.ajax(options).done(resolve).fail(reject);
-//   });
-// }
-
-
-
-
-
-
-// function genesis() {   
-//     updateBlock({
-//       url: '/update-height',
-//       type: 'put',
-//       contentType: 'application/json; charset=utf-8',
-//       data: JSON.stringify({
-//         height: 0
-//       })
-//     }).then(
-//       function fulfillHandler(data) {
-//         alert(data);
-//       },
-//       function rejectHandler(jqXHR, textStatus, errorThrown) {
-//         console.error("jqXHR", jqXHR)
-//         console.error("textStatus", textStatus)
-//         console.error("errorThrown", errorThrown)
-//       }
-//     ).catch(function errorHandler(error) {
-//       res.send("Couldn't update block")
-//     });
-
-// }
-
-
-
-
-
-// function testAjax(handleData) {
-//     $.ajax({
-//         url:"getvalue.php",  
-//         success:function(data) {
-//           handleData(data); 
-//         }
-//     });
-// }
-
-// testAjax(function(output){
-//   // here you use the output
-// });
-
-// var output = testAjax(svar);
-
-// function getCurrentBlock(getData) {
-//     let settings = {
-//         async: true,
-//         crossDomain: true,
-//         url: "/current-height",
-//         method: "GET",
-//         success: 
-//     }; 
-//     $.ajax(settings).done(function(result) {
-//         getData(result.height);
-//     });
-// }
-
-
-
-// const next = function() {
-
-// }
-
-// const prev = function() {
-
-// }
-
-// function errorCheck(height, command) {
-//     let settings = {
-//         async: true,
-//         crossDomain: true,
-//         url: "http://localhost:8080/current-height",
-//         method: "GET"
-//     }; 
-//     $.ajax(settings).done(function(obj) {
-//         let currentHeight = obj.height;
-//         if(command == 'genesis'){
-//             if(currentHeight == height) {
-//                 alert('already at the genesis block');
-//             }
-//         } else if (command == 'latest') {
-//             console.log('foo');
-//         } else if (foo == bar){
-//             console.log('foo');
-//         } else if (bizz == bang){
-//             console.log('foo');
-//         } else {
-//             console.log('foo');
-//         }
-//     });
-// }
-
-
-// function render(currentHeight){
-//     // see if box exists, if not create one
-//     if ($('body > .box').length < 1) {
-//         $('body').append(`<div class="box" data-height=${currentHeight}>`);
-//     }
-    
-//     let box = $('body > .box');
-//     $(box).on('click', function(e){
-//         e.preventDefault();
-//         //move box 'up' off screen, wait, and then delete using promise
-//         clicked(box)
-//             .then(response => {
-//                 $(box).remove();
-//                 let newHeight = Number(currentHeight) - 1; // this becomes the 
-//                 sessionStorage.setItem('blockHeight', newHeight);
-//             })
-//             .then(response => {
-//                 let currentHeight = sessionStorage.getItem('blockHeight');
-//                 render(currentHeight);
-//             })
-//      });
-//     }
-
-
-
-
-// function clicked(box){
-//     return new Promise(function(resolve, reject) {
-//       $(box).addClass('move-up');
-//       setTimeout(function() {
-//         resolve();
-//       }, 1000); // Wait 3s then resolve.
-//     });
-// }
-
-
-// $(function(){
-//     let p = makeAsyncCall('/current-height', 'get');
-
-//     p.done(function(result) {
-//         alert('hi')
-//         // result what we passed to resolve()!
-//         // do something with the result
-//     });
-
-//     p.fail(function(result) {
-//         // result is a string because that is what we passed to reject()!
-//         var error = result;
-//         console.log(error);
-//     });
-
-// });
-
-// function successCallback(result) {
-//     this.d.resolve(result);
-// }
-
-// function failCallback() {
-//     this.d.reject("something went wrong ");
-// }
-
-// function makeAsyncCall(url, method) {
-//     let d = $.Deferred();
-
-//     $.ajax({
-//       url: url,
-//       type: method,
-//       success: successCallback,
-//       error: failCallback
-//     })
-
-//     return d.promise();
-// }
+function currentDifficulty() {
+    return Promise.resolve(
+        $.ajax({
+            async: true,
+            crossDomain: true,
+            url: `/get-current-difficulty`,
+            method: "GET"
+        })
+        .done(function(data){
+            return data
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            console.error('jqXHR', jqXHR);
+            console.error('textStatus', textStatus);
+            console.error('errorThrown', errorThrown);
+        })
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+function blockValidation(verb){
+    return new Promise(
+        (resolve, reject) => {
+            currentHeightDB()
+                .then(function(DbBlock) {
+                    return DbBlock.height;
+                })
+                .then(function(currentHeightInDB) {
+                    if(verb == 'next'){
+                        latestBlockHeight()            
+                            .then(function(latestHeight) {
+                                if( latestHeight == currentHeightInDB) {
+                                    alert("Already at the most recent block");
+                                    return;
+                                } else {
+                                    let nextBlock = currentHeightInDB + 1;
+                                    resolve(nextBlock); 
+                                }
+                        });
+                    } else if (verb == 'previous') {
+                            blockInfo(currentHeightInDB, difficulty)
+                            .then(function(block){
+                                if (block.info.height < 0) {
+                                    alert('There are no blocks prior to the genesis block.');
+                                    return;
+                                } else {
+                                    let prevHeight = currentHeightInDB - 1;
+                                    resolve(prevHeight);
+                                }
+                            });
+                    } else {
+                        reject("error in blockValidation");
+                    }                          
+            })
+        }
+    )
+}
