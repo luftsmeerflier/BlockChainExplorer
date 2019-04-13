@@ -63,9 +63,15 @@ function nextBlock(currentChainHeight) {
     });
 }
 
+// Otherwise, I plan to travel and gig using workaway.info
+
+// What web framework do you use? 
+
+// -Mapi
+
 function start(){
     if( !($('.cube').length )){
-        $('.cube-content').append(cube);
+        $('.wrap').append(cube);
     }
     latestBlockHeight()
         .then((latestHeight) => {
@@ -213,7 +219,7 @@ function renderBlockInfo(height) {
 
 
  
-                $('body').append(`
+                $('.wrap').append(`
                     <div class="blockinfo-container">
                     <ul class="blockinfo">
                         <h3 class="pseudo-header">Block Header:</h3>

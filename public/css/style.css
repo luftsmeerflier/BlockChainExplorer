@@ -2,16 +2,11 @@ html {
 
 }
 
-body {
-  height: 100vh;
-  width: 100vw;
-}
-
 .input {
   display: flex;
   justify-content: center;
   flex-direction: column;
-  text-align: center;
+  margin: 0 auto;
 }
 
 .goto {
@@ -24,30 +19,31 @@ body {
     display: none; 
 }
 
-footer {
-/*  position: fixed;
-  bottom: 0px;
-    left: 0px;
-    right: 0px;
-    margin-bottom: 0px;
-
+.main {
+  height: 100vh;
+  /*  flexbox  */
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
-  display: flex;*/
-/*  flex-direction: column;
-*/}
+  display: flex;
+  flex-direction: column;
+  justify-content:  space-between;
+}
 
 .buttons-footer {
-  position:fixed;
+/*  position:fixed;
   left:0px;
   bottom:0px;
   height:60px;
   width:100%;
   background:#999;
   width: 100%;
-  margin-bottom: 0;
+  margin-bottom: 0;*/
+  height:60px;
+  width: 100%;
+  background:#999;
+
 /*  flexbox  */
   display: -webkit-box;
   display: -moz-box;
@@ -55,7 +51,7 @@ footer {
   display: -webkit-flex;
   display: flex;
   flex-direction: row;
-  justify-content:  space-evenly;
+  justify-content:  space-between;
 }
 
 /* IE 6 */
@@ -70,6 +66,11 @@ footer {
   margin-bottom: 2.5%;
   outline: 1.5px solid #ff7f00;
 }
+
+.blockinfo{
+  margin: 0;
+}
+
 
 .blockinfo-container {
   width: 100%;
@@ -169,11 +170,20 @@ footer {
 .wrap {
   perspective: 800px;
   perspective-origin: 50% 100px;
+  height: 50%;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  justify-content:  space-between;
+
 }
 
 .cube {
   margin: 0 auto;
-  margin-top: 6%;
   position: relative;
   width: 200px;
   transform-style: preserve-3d;
@@ -264,7 +274,7 @@ footer {
   font-size: 1rem;
 }
 
-.restart {
+.reset {
   display: block;
   margin: 0 auto;
 }
@@ -280,6 +290,10 @@ footer {
 
 .screen-small-height p {
   margin-bottom: 0;
+}
+
+.pseudo-header {
+  margin: 0;
 }
 
 

@@ -12,29 +12,32 @@
 </head>
 <body class="experiment">
     <div class="main" role="main">
-        <div class='screen-small-height' aria-level=1>
-            <h1 class="current-height" role="heading" aria-level=1>Latest height on blockchain: <span class="height"></span></h1>
-            <p class="current-block-db">Current block in-view:<span class="db-height"></span></p>
-            <p class="instructions">Click the arrow keys to navigate the blockchain</p>
-        </div>
-        <div class="wrap">
-            <section class='cube-content'></section>
-        </div>
-    </div>
 
-    <footer role="contentinfo" class='buttons-footer'>
-        <button class="goto previous"> << </button>
-        <div class="input">
-            <button class="reset" style="display: none">Reset</button>
-            <form class="form" name="myForm" id="find-block" method="post">
-                <label for="block-num" class="block-num">Block #:</label>
-                <input type="text" aria-label="input a blockheight number" name="fname">
-                <label for="submit" style="display:none">Block #:</label>
-                <input type="submit" value="Go!">
-            </form>
-        </div>
-        <button class="goto next"> >> </button>
-    </footer>
+        <section class='screen-small-height' aria-level=1>
+            <h1 class="current-height" role="heading" aria-level=1>Latest height on blockchain: <span class="height"></span></h1>
+            <p class="current-block-db">Current block in-view: <span class="db-height"></span></p>
+            <p class="instructions">Click the arrow keys to navigate the blockchain</p>
+        </section>
+
+        <section class="wrap">
+
+        </section>
+
+        <footer role="contentinfo" class='buttons-footer'>
+            <button class="goto previous"> << </button>
+             <div class="input">
+                <button class="reset" style="display: none">Reset</button>
+                <form class="form" name="myForm" id="find-block" method="post">
+                    <label for="block-num" class="block-num">Block #:</label>
+                    <input type="text" aria-label="input a blockheight number" name="fname">
+                    <label for="submit" style="display:none">Block #:</label>
+                    <input type="submit" value="Go!">
+                </form>
+            </div>
+            <button class="goto next"> >> </button>
+        </footer>
+
+     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="js/client.js"></script>
