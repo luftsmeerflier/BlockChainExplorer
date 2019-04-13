@@ -34,7 +34,6 @@ function previousBlock() {
                 let prevHeight = currentHeight - 1;
                 renderBlockInfo(prevHeight);     
                 updateDbHeight(prevHeight);
-                // $('.db-height').replaceWith(prevHeight);
             })
         }
     })

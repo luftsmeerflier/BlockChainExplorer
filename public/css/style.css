@@ -1,10 +1,10 @@
 html {
-  min-width: 100vw;
-  min-height: 100vh;
+
 }
 
 body {
-  height: 80vh;
+  height: 100vh;
+  width: 100vw;
 }
 
 .input {
@@ -25,14 +25,19 @@ body {
 }
 
 footer {
-  position: absolute;
+/*  position: fixed;
+  bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin-bottom: 0px;
+
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
-  display: flex;
-  flex-direction: column;
-}
+  display: flex;*/
+/*  flex-direction: column;
+*/}
 
 .buttons-footer {
   position:fixed;
@@ -42,8 +47,8 @@ footer {
   width:100%;
   background:#999;
   width: 100%;
+  margin-bottom: 0;
 /*  flexbox  */
-  position: absolute;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -51,8 +56,6 @@ footer {
   display: flex;
   flex-direction: row;
   justify-content:  space-evenly;
-
-  margin-bottom: 0.5rem;
 }
 
 /* IE 6 */
