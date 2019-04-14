@@ -61,12 +61,6 @@ function nextBlock(currentChainHeight) {
     });
 }
 
-// Otherwise, I plan to travel and gig using workaway.info
-
-// What web framework do you use? 
-
-// -Mapi
-
 function start(){
     if( !($('.cube').length )){
         $('.wrap').append(cube);
@@ -91,17 +85,18 @@ $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
     $('.instructions').remove();
     currentHeightDB()
        .then((dbBlock) => {
-                let currentHeightDB = dbBlock.height;
+            let currentHeightDB = dbBlock.height;
             latestBlockHeight()
             .then((latestChainHeight) => {
                 let data = $("#find-block :input").serializeArray();
                 let value = data[0].value; //use the console for debugging, F12 in Chrome, not alerts
-                if(isNaN(value)){
-                    alert("please enter a valid number");
+                alert(value)
+                if (value < 0) {
+                    alert("There are no blocks prior to the genesis block!");
                 } else if(value > latestChainHeight){
                     alert("That block hasn't been discovered!");
-                } else if (value < 0) {
-                    alert("There are no blocks prior to the genesis block!");
+                } else if(typeof(value) !== "number"){
+                    alert("please enter a valid number");
                 } else {
                     if(value > currentHeightDB){
                         moveUp()
@@ -223,28 +218,28 @@ function renderBlockInfo(height) {
                         <h3 class="pseudo-header">Block Header:</h3>
                         <li>
                             <span class="label">version:</span>
-                            ${res.header.version}
+                            <p class="blockinfo-text">${res.header.version}</p>
                         </li>
                         <li>
                             <span class="label">previous hash:</span>
-                            ${res.header.previous_hash}
+                            <p class="blockinfo-text">${res.header.previous_hash}</p>
                         </li>
                         <li>
                             <span class="label">merkle root:</span> 
-                            ${res.header.merkle_root}
+                            <p class="blockinfo-text">${res.header.merkle_root}</p>
                         </li>
                        
                         <li>
                             <span class="label">time:</span>
-                            ${res.header.time}
+                            <p class="blockinfo-text">${res.header.time}</p>
                         </li> 
                         <li>                      
                             <span class="label">bits:</span>
-                            ${res.header.bits}
+                            <p class="blockinfo-text">${res.header.bits}</p>
                         </li>
                         <li>
                             <span class="label">nonce:</span>
-                            ${res.header.nonce}
+                            <p class="blockinfo-text">${res.header.nonce}</p>
                         </li>
                     </ul>
                 </div>
@@ -279,7 +274,6 @@ function updateDbHeight(height) {
         })
     );
 }
-
 
 function currentHeightDB() {
     return new Promise((resolve, reject) => {
@@ -382,18 +376,6 @@ function currentDifficulty() {
         })
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 function blockValidation(verb){
     return new Promise(

@@ -2,11 +2,6 @@ html {
 
 }
 
-* {
-  outline: 1px dotted red;
-}
-
-
 .input {
   display: flex;
   justify-content: center;
@@ -308,12 +303,15 @@ html {
   margin: 0;
 }
 
-
-body {
-    -webkit-text-size-adjust: 100%;
+.blockinfo-text, .label {
+  margin: 1% 0;
+  display: inline-block;
+  font-size: 20px;
 }
+
 @media only screen and (device-width: 768px) {
   /* For general iPad layouts */
+  font-size: 2rem;
 }
 
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
