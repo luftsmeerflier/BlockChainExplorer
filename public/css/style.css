@@ -2,6 +2,11 @@ html {
 
 }
 
+* {
+  outline: 1px dotted red;
+}
+
+
 .input {
   display: flex;
   justify-content: center;
@@ -67,12 +72,19 @@ html {
   outline: 1.5px solid #ff7f00;
 }
 
-.blockinfo{
+.blockinfo {
+  height: 100%;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   margin: 0;
 }
 
 
 .blockinfo-container {
+  height: 100%;
   width: 100%;
 }
 
@@ -297,3 +309,17 @@ html {
 }
 
 
+body {
+    -webkit-text-size-adjust: 100%;
+}
+@media only screen and (device-width: 768px) {
+  /* For general iPad layouts */
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+  /* For portrait layouts only */
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+  /* For landscape layouts only */
+}

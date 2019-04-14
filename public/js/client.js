@@ -30,7 +30,6 @@ function previousBlock() {
         } else {
             moveDown()
             .then(()=>{
-                $('.cube > *').remove();
                 let prevHeight = currentHeight - 1;
                 renderBlockInfo(prevHeight);     
                 updateDbHeight(prevHeight);
@@ -51,7 +50,6 @@ function nextBlock(currentChainHeight) {
         } else {
             moveUp()
             .then(()=>{
-                $('.cube > *').remove();
                 let nextHeight = height + 1;
                 renderBlockInfo(nextHeight);
                 updateDbHeight(nextHeight);
@@ -123,7 +121,6 @@ $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
             console.error("Couldn't append blockheader info");
         });
         function render(value){
-            $('.cube > *').remove();
             renderBlockInfo(value);
             updateDbHeight(value);
         }
@@ -203,6 +200,7 @@ function currentHeightDB() {
 }
 
 function renderBlockInfo(height) {
+    $('.cube').remove();
     //so that we can't click buttons mid-load
     currentDifficulty()
     .then((difficulty) => {
