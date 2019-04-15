@@ -92,7 +92,10 @@ $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
         .catch(function(error){
             console.error("Error thrown");
         })
-        .then(() => {
+        .then((bool) => {
+            if(bool == false){
+                return;
+            }
             currentHeightDB()
             .then((currentHeightDB) => {
                 if(userChoice > currentHeightDB){
@@ -110,11 +113,10 @@ $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
         })
         .catch(function(error) {
             alert(`Please enter a number between 0 and the latest height`);
-            console.error("Couldn't validate");
         });
 
     function validateForm(userInput, latestHeight) {
-        if (userInput < 0 || userInput > latestHeight) {
+        if (Number(userInput) < 0 || Number(userInput) > latestHeight) {
             alert("Number must be between 0 and the latest height");
             return false;
         } else {
@@ -159,7 +161,6 @@ const cube = `
 
 function moveUp() {
     $('.cube > *').addClass('move-up');
-
     return new Promise(function(resolve) {
         setTimeout(resolve, 1000);
     });
@@ -174,13 +175,17 @@ function moveDown() {
 }
 
 $('.reset').on('click', function(){
+    reset();
+});
+
+function reset(){
     $('.blockinfo-container').remove();
     $('.reset').css('display', 'none');
     $('.form').css('display', 'block');
     $('.previous').css('display', 'block');
     $('.next').css('display', 'block');
     $('.wrap').append(cube);
-});
+}
 
 function currentHeightDB() {
     return new Promise((resolve, reject) => {
