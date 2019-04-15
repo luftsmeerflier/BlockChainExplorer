@@ -83,42 +83,49 @@ function start(){
 $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
     e.preventDefault();  //prevent form from submitting
     $('.instructions').remove();
-    currentHeightDB()
-       .then((dbBlock) => {
-            let currentHeightDB = dbBlock.height;
-            latestBlockHeight()
-            .then((latestChainHeight) => {
-                let data = $("#find-block :input").serializeArray();
-                let value = data[0].value; //use the console for debugging, F12 in Chrome, not alerts
-                alert(value)
-                if (value < 0) {
-                    alert("There are no blocks prior to the genesis block!");
-                } else if(value > latestChainHeight){
-                    alert("That block hasn't been discovered!");
-                } else if(typeof(value) !== "number"){
-                    alert("please enter a valid number");
+    let data = $("#find-block :input").serializeArray();
+    let userChoice = data[0].value; 
+    latestBlockHeight()
+        .then((latestHeight) => {
+            return validateForm(userChoice, latestHeight);
+        })
+        .catch(function(error){
+            console.error("Error thrown");
+        })
+        .then(() => {
+            currentHeightDB()
+            .then((currentHeightDB) => {
+                if(userChoice > currentHeightDB){
+                    moveUp()
+                    .then(() => {
+                        render(userChoice);
+                    });
                 } else {
-                    if(value > currentHeightDB){
-                        moveUp()
-                        .then(() => {
-                            render(value);
-                        });
-                    } else {
-                        moveDown()
-                        .then(() => {
-                            render(value);
-                        });
-                    }
+                    moveDown()
+                    .then(() => {
+                        render(userChoice);
+                    });
                 }
             })
         })
         .catch(function(error) {
-            console.error("Couldn't append blockheader info");
+            alert(`Please enter a number between 0 and the latest height`);
+            console.error("Couldn't validate");
         });
-        function render(value){
-            renderBlockInfo(value);
-            updateDbHeight(value);
+
+    function validateForm(userInput, latestHeight) {
+        if (userInput < 0 || userInput > latestHeight) {
+            alert("Number must be between 0 and the latest height");
+            return false;
+        } else {
+            return true;
         }
+    }
+
+    function render(value){
+        renderBlockInfo(value);
+        updateDbHeight(value);
+    }
 });
 
 function updateOnChainElem(height){
@@ -172,7 +179,7 @@ $('.reset').on('click', function(){
     $('.form').css('display', 'block');
     $('.previous').css('display', 'block');
     $('.next').css('display', 'block');
-    $('.cube-content').append(cube);
+    $('.wrap').append(cube);
 });
 
 function currentHeightDB() {

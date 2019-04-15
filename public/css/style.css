@@ -2,6 +2,10 @@ html {
 
 }
 
+select {
+  width: 200px;
+}
+
 .input {
   display: flex;
   justify-content: center;
