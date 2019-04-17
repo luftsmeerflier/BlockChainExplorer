@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 // this module
 const expect = chai.expect;
 
-const {Restaurant} = require('../models');
+const {BlockHeight} = require('../models');
 const {app, runServer, closeServer} = require('../server');
 const {TEST_DATABASE_URL} = require('../config');
 
@@ -20,30 +20,26 @@ chai.use(chaiHttp);
 // we use the Faker library to automatically
 // generate placeholder values for author, title, content
 // and then we insert that data into mongo
-function seedRestaurantData() {
-  console.info('seeding restaurant data');
+function seedBlockchainData() {
+  console.info('seeding block height data');
   const seedData = [];
 
   for (let i=1; i<=10; i++) {
     seedData.push(generateRestaurantData());
   }
   // this will return a promise
-  return BlogPost.insertMany(seedData);
+  return Blockheight.insertMany(seedData);
 }
 // generate an object represnting a restaurant.
 // can be used to generate seed data for db
 // or request.body data
-function generateRestaurantData() {
+
+function generateBlockData() {
   return {
-    name: faker.company.companyName(),
-    borough: generateBoroughName(),
-    cuisine: generateCuisineType(),
-    address: {
-      building: faker.address.streetAddress(),
-      street: faker.address.streetName(),
-      zipcode: faker.address.zipCode()
-    },
-    grades: [generateGrade(), generateGrade(), generateGrade()]
+    height: faker.random.number({
+      'min': 0,
+      'max': 50000
+    });
   };
 }
 
@@ -57,7 +53,7 @@ function tearDownDb() {
   return mongoose.connection.dropDatabase();
 }
 
-describe('Restaurants API resource', function() {
+describe('Blockchains API resource', function() {
 
   // we need each of these hook functions to return a promise
   // otherwise we'd need to call a `done` callback. `runServer`,
@@ -68,7 +64,7 @@ describe('Restaurants API resource', function() {
   });
 
   beforeEach(function() {
-    return seedRestaurantData();
+    return seedBlockchainData();
   });
 
   afterEach(function() {
@@ -84,7 +80,7 @@ describe('Restaurants API resource', function() {
   // on proving something small
   describe('GET endpoint', function() {
 
-    it('should return all existing restaurants', function() {
+    it('should return all existing block heights', function() {
       // strategy:
       //    1. get back all restaurants returned by by GET request to `/restaurants`
       //    2. prove res has right status, data type
