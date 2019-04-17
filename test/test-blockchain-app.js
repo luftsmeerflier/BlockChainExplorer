@@ -39,7 +39,7 @@ function generateBlockData() {
     height: faker.random.number({
       'min': 0,
       'max': 50000
-    });
+    })
   };
 }
 
@@ -109,138 +109,22 @@ describe('Blockchains API resource', function() {
     it('should return restaurants with right fields', function() {
       // Strategy: Get back all restaurants, and ensure they have expected keys
 
-      let resRestaurant;
+      let resBlockchain;
       return chai.request(app)
-        .get('/restaurants')
+        .get('/current-height-db')
         .then(function(res) {
-          expect(res).to.have.status(200);
-          expect(res).to.be.json;
-          expect(res.body.restaurants).to.be.a('array');
-          expect(res.body.restaurants).to.have.lengthOf.at.least(1);
-
-          res.body.restaurants.forEach(function(restaurant) {
-            expect(restaurant).to.be.a('object');
-            expect(restaurant).to.include.keys(
-              'id', 'name', 'cuisine', 'borough', 'grade', 'address');
+            expect(res).to.have.status(200);
+            expect(res).to.be.json;
+            expect(res.body.height).to.be.a('number');
+            expect(res.body.height).to.have.lengthOf(1);
+            expect(res.body).to.include.keys('height');
           });
-          resRestaurant = res.body.restaurants[0];
-          return Restaurant.findById(resRestaurant.id);
+          resBlockchain = res.body;
+          return BlockHeight.findById(resBlockchain.id);
         })
-        .then(function(restaurant) {
-
-          expect(resRestaurant.id).to.equal(restaurant.id);
-          expect(resRestaurant.name).to.equal(restaurant.name);
-          expect(resRestaurant.cuisine).to.equal(restaurant.cuisine);
-          expect(resRestaurant.borough).to.equal(restaurant.borough);
-          expect(resRestaurant.address).to.contain(restaurant.address.building);
-
-          expect(resRestaurant.grade).to.equal(restaurant.grade);
+        .then(function(blockData) {
+          expect(resBlockchain.id).to.equal(blockData.id);
+          expect(resBlockchain.height).to.equal(blockData.height);
         });
     });
-  });
-
-  describe('POST endpoint', function() {
-    // strategy: make a POST request with data,
-    // then prove that the restaurant we get back has
-    // right keys, and that `id` is there (which means
-    // the data was inserted into db)
-    it('should add a new restaurant', function() {
-
-      const newRestaurant = generateRestaurantData();
-      let mostRecentGrade;
-
-      return chai.request(app)
-        .post('/restaurants')
-        .send(newRestaurant)
-        .then(function(res) {
-          expect(res).to.have.status(201);
-          expect(res).to.be.json;
-          expect(res.body).to.be.a('object');
-          expect(res.body).to.include.keys(
-            'id', 'name', 'cuisine', 'borough', 'grade', 'address');
-          expect(res.body.name).to.equal(newRestaurant.name);
-          // cause Mongo should have created id on insertion
-          expect(res.body.id).to.not.be.null;
-          expect(res.body.cuisine).to.equal(newRestaurant.cuisine);
-          expect(res.body.borough).to.equal(newRestaurant.borough);
-
-          mostRecentGrade = newRestaurant.grades.sort(
-            (a, b) => b.date - a.date)[0].grade;
-
-          expect(res.body.grade).to.equal(mostRecentGrade);
-          return Restaurant.findById(res.body.id);
-        })
-        .then(function(restaurant) {
-          expect(restaurant.name).to.equal(newRestaurant.name);
-          expect(restaurant.cuisine).to.equal(newRestaurant.cuisine);
-          expect(restaurant.borough).to.equal(newRestaurant.borough);
-          expect(restaurant.grade).to.equal(mostRecentGrade);
-          expect(restaurant.address.building).to.equal(newRestaurant.address.building);
-          expect(restaurant.address.street).to.equal(newRestaurant.address.street);
-          expect(restaurant.address.zipcode).to.equal(newRestaurant.address.zipcode);
-        });
-    });
-  });
-
-  describe('PUT endpoint', function() {
-
-    // strategy:
-    //  1. Get an existing restaurant from db
-    //  2. Make a PUT request to update that restaurant
-    //  3. Prove restaurant returned by request contains data we sent
-    //  4. Prove restaurant in db is correctly updated
-    it('should update fields you send over', function() {
-      const updateData = {
-        name: 'fofofofofofofof',
-        cuisine: 'futuristic fusion'
-      };
-
-      return Restaurant
-        .findOne()
-        .then(function(restaurant) {
-          updateData.id = restaurant.id;
-
-          // make request then inspect it to make sure it reflects
-          // data we sent
-          return chai.request(app)
-            .put(`/restaurants/${restaurant.id}`)
-            .send(updateData);
-        })
-        .then(function(res) {
-          expect(res).to.have.status(204);
-
-          return Restaurant.findById(updateData.id);
-        })
-        .then(function(restaurant) {
-          expect(restaurant.name).to.equal(updateData.name);
-          expect(restaurant.cuisine).to.equal(updateData.cuisine);
-        });
-    });
-  });
-
-  describe('DELETE endpoint', function() {
-    // strategy:
-    //  1. get a restaurant
-    //  2. make a DELETE request for that restaurant's id
-    //  3. assert that response has right status code
-    //  4. prove that restaurant with the id doesn't exist in db anymore
-    it('delete a restaurant by id', function() {
-
-      let restaurant;
-
-      return Restaurant
-        .findOne()
-        .then(function(_restaurant) {
-          restaurant = _restaurant;
-          return chai.request(app).delete(`/restaurants/${restaurant.id}`);
-        })
-        .then(function(res) {
-          expect(res).to.have.status(204);
-          return Restaurant.findById(restaurant.id);
-        })
-        .then(function(_restaurant) {
-          expect(_restaurant).to.be.null;
-        });
-    });
-  });
 });

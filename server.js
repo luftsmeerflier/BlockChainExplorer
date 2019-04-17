@@ -46,7 +46,7 @@ app.get('/current-height-db', function (req, res, next) {
     BlockHeight
     .findOne()
     .then(block => {
-      res.json({
+      res.status(200).json({
         height: block.height
       })
     })
