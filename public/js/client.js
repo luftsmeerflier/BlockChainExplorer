@@ -1,25 +1,20 @@
 'use strict';
 
 $(function() {
-    start();
-    $('.next').on('click', function(){
-        latestBlockHeight()
-            .then((latestChainHeight)=>{
-                nextBlock(latestChainHeight);
-                $('.loader').hide();   
-                $('.height').empty();
-                $('.height').text(latestChainHeight);
-            })
-
-    });
-    $('.previous').on('click', function(){
-        previousBlock();
-        latestBlockHeight()
-        .then((height) => {
+    start()
+    .then((height) => {
+        $('.next').on('click', function(){
+            nextBlock(height.onChain);
+            $('.loader').hide();   
             $('.height').empty();
-            $('.height').text(height);
+            $('.height').text(height.onChain);
         });
-    });
+        $('.previous').on('click', function(){
+            previousBlock(height.inDB)
+                $('.height').empty();
+                $('.height').text(height.inDB);
+        });
+    })
 });
 
 function previousBlock() {
@@ -65,23 +60,29 @@ function nextBlock(currentChainHeight) {
 }
 
 function start(){
+    return new Promise((resolve, reject) => {
     //$('.loader').hide();
-    if( !($('.cube').length )){
-        $('.wrap').append(cube);
-    }
-    latestBlockHeight()
-        .then((latestHeight) => {
-            return latestHeight
-        })
-        .then((height)=>{
-            deleteOnStart(height)
-                .then((block) => {
-                    //current height in DB
-                    let height = block.height;
-                    $('.height').text(height);
-                    $('.db-height').text(height);
-                });
-        });
+        if( !($('.cube').length )){
+            $('.wrap').append(cube);
+        }
+        let obj = {};
+        latestBlockHeight()
+            .then((latestHeight) => {
+                obj.onChain = latestHeight;
+                return latestHeight
+            })
+            .then((height)=>{
+                deleteOnStart(height)
+                    .then((block) => {
+                        //current height in DB
+                        let height = block.height;
+                        obj.inDB = height;
+                        $('.height').text(height);
+                        $('.db-height').text(height);
+                        resolve(obj);
+                    });
+            });
+    });
 }
 
 $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
@@ -133,23 +134,6 @@ $('#find-block').on('submit', function(e) { //use on if jQuery 1.7+
         updateDbHeight(value);
     }
 });
-
-function updateOnChainElem(height){
-    $('.current-height').data('data-height-on-chain', height);
-}
-
-function updateDbElem(height){
-    $('.current-block-db').data('data-height-in-db', height);
-}
-
-function getHeightDB(){
-    return $('.current-block-db').data('height-in-db');
-}
-
-function getHeightOnChain(){
-    return $('.current-height').data('height-on-chain');
-}
-
 
 const cube = `        
     <div class="cube">
