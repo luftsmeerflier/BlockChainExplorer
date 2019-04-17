@@ -24,11 +24,9 @@ function seedBlockchainData() {
   console.info('seeding block height data');
   const seedData = [];
 
-  for (let i=1; i<=10; i++) {
-    seedData.push(generateRestaurantData());
-  }
+  seedData.push(generateBlockData());
   // this will return a promise
-  return Blockheight.insertMany(seedData);
+  return BlockHeight.insertMany(seedData);
 }
 // generate an object represnting a restaurant.
 // can be used to generate seed data for db
@@ -42,7 +40,6 @@ function generateBlockData() {
     })
   };
 }
-
 
 // this function deletes the entire database.
 // we'll call it in an `afterEach` block below
@@ -80,33 +77,36 @@ describe('Blockchains API resource', function() {
   // on proving something small
   describe('GET endpoint', function() {
 
-    it('should return all existing block heights', function() {
+    it('should return block height in DB', function() {
       // strategy:
       //    1. get back all restaurants returned by by GET request to `/restaurants`
       //    2. prove res has right status, data type
-      //    3. prove the number of restaurants we got back is equal to number
+      //    3. prove the number of blockheights we got back is equal to number
       //       in db.
       //
       // need to have access to mutate and access `res` across
       // `.then()` calls below, so declare it here so can modify in place
       let res;
       return chai.request(app)
-        .get('/restaurants')
+        .get('/current-height-db')
         .then(function(_res) {
           // so subsequent .then blocks can access response object
           res = _res;
           expect(res).to.have.status(200);
           // otherwise our db seeding didn't work
-          expect(res.body.restaurants).to.have.lengthOf.at.least(1);
-          return Restaurant.count();
+          expect(res.body).to.be.a("object");
+          expect(res.body.height).to.be.a('number');
+          //return BlockHeight;
         })
-        .then(function(count) {
-          expect(res.body.restaurants).to.have.lengthOf(count);
+        .then(count => {
+          expect(BlockHeight.find().exec((err, results) => { 
+            return results.length 
+          })).to.equal(count);
         });
     });
 
 
-    it('should return restaurants with right fields', function() {
+    it('should return block height with right fields', function() {
       // Strategy: Get back all restaurants, and ensure they have expected keys
 
       let resBlockchain;
@@ -116,15 +116,9 @@ describe('Blockchains API resource', function() {
             expect(res).to.have.status(200);
             expect(res).to.be.json;
             expect(res.body.height).to.be.a('number');
-            expect(res.body.height).to.have.lengthOf(1);
+            expect(Object.entries(res.body)).to.have.lengthOf(1);
             expect(res.body).to.include.keys('height');
           });
-          resBlockchain = res.body;
-          return BlockHeight.findById(resBlockchain.id);
-        })
-        .then(function(blockData) {
-          expect(resBlockchain.id).to.equal(blockData.id);
-          expect(resBlockchain.height).to.equal(blockData.height);
-        });
+       });
     });
 });
