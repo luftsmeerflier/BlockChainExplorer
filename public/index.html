@@ -16,11 +16,13 @@
         <section class='screen-small-height' aria-level=1>
             <h1 class="current-height" role="heading" aria-level=1>Latest height on blockchain: <span class="height"></span></h1>
             <p class="current-block-db">Current block in-view: <span class="db-height"></span></p>
-            <p class="instructions">Click the arrow buttons to navigate the blockchain</p>
-        </section>
+            <p class="instructions">Input a number between 0 and the latest height</p>
+        </section> 
 
         <section class="wrap">
-
+            <div class='loader' style="display:none">
+            <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
+            </div>
         </section>
 
         <footer role="contentinfo" class='buttons-footer'>

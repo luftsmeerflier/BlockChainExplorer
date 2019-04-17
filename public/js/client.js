@@ -6,6 +6,7 @@ $(function() {
         latestBlockHeight()
             .then((latestChainHeight)=>{
                 nextBlock(latestChainHeight);
+                $('.loader').hide();   
                 $('.height').empty();
                 $('.height').text(latestChainHeight);
             })
@@ -30,8 +31,9 @@ function previousBlock() {
         } else {
             moveDown()
             .then(()=>{
+                $('.loader').css('display', 'block');
                 let prevHeight = currentHeight - 1;
-                renderBlockInfo(prevHeight);     
+                renderBlockInfo(prevHeight); 
                 updateDbHeight(prevHeight);
             })
         }
@@ -50,6 +52,7 @@ function nextBlock(currentChainHeight) {
         } else {
             moveUp()
             .then(()=>{
+                $('.loader').css('display', 'block');
                 let nextHeight = height + 1;
                 renderBlockInfo(nextHeight);
                 updateDbHeight(nextHeight);
@@ -62,6 +65,7 @@ function nextBlock(currentChainHeight) {
 }
 
 function start(){
+    //$('.loader').hide();
     if( !($('.cube').length )){
         $('.wrap').append(cube);
     }
@@ -168,6 +172,7 @@ function moveUp() {
 
 
 function moveDown() {
+    $('.reset').css('display', 'none');
     $('.cube > *').addClass('move-down');
     return new Promise(function(resolve) {
         setTimeout(resolve, 1000);
@@ -222,7 +227,6 @@ function renderBlockInfo(height) {
                 $('.db-height').empty();
                 $('.db-height').text(height);
 
-
  
                 $('.wrap').append(`
                     <div class="blockinfo-container">
@@ -256,6 +260,7 @@ function renderBlockInfo(height) {
                     </ul>
                 </div>
                 `);
+                $('.loader').css('display', 'none');
             })
         })
         .catch(function(error) {

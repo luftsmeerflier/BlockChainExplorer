@@ -58,6 +58,14 @@ select {
   justify-content:  space-between;
 }
 
+.loader {
+  text-align: center;
+}
+
+
+
+
+
 /* IE 6 */
 * html .buttons-footer {
    position:absolute;
