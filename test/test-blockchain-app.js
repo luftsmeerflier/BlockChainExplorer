@@ -4,6 +4,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const faker = require('faker');
 const mongoose = require('mongoose');
+const should = require('should');
+
 
 // this makes the expect syntax available throughout
 // this module
@@ -50,7 +52,7 @@ function tearDownDb() {
   return mongoose.connection.dropDatabase();
 }
 
-describe('Blockchains API resource', function() {
+describe('Blockchains height in database resource', function() {
 
   // we need each of these hook functions to return a promise
   // otherwise we'd need to call a `done` callback. `runServer`,
@@ -121,4 +123,26 @@ describe('Blockchains API resource', function() {
           });
        });
     });
+});
+
+describe('DELETE endpoint', function() {
+  // strategy:
+  //  1. get a post
+  //  2. make a DELETE request for that post's id
+  //  3. assert that response has right status code
+  //  4. prove that post with the id doesn't exist in db anymore
+  it('should delete the database entry and construct a new one', function () {
+    let randonNum = Math.floor(Math.random(0, 10) * 50000);
+    return chai.request(app)
+      .delete(`/delete-and-instantiate/${randonNum}`)
+      .then(res => {
+        expect(res).to.have.status(204);
+        BlockHeight
+        .findOne()
+        .then(_post => {
+          should.not.exist(_post);
+        })
+        .catch(err => reject(err));
+    });
+  });
 });

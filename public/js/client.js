@@ -343,12 +343,9 @@ function deleteOnStart(heightOnChain) {
         $.ajax({
             async: true,
             crossDomain: true,
-            url: "/delete-and-instantiate",
+            url: `/delete-and-instantiate/:${heightOnChain}`,
             contentType: 'application/json; charset=utf-8',
-            method: "delete",
-            data: JSON.stringify({
-                height: heightOnChain
-            })
+            method: "delete"
         })
         .done(function(data){
             resolve(data);

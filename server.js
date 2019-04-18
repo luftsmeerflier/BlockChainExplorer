@@ -70,41 +70,42 @@ app.get('/latest-block-height', (req, res) => {
 
 
 
-app.delete('/delete-and-instantiate', function(req, res, next){
+app.delete('/delete-and-instantiate/:height', function(req, res, next){
   //Takes a height and then makes sure there's one DB entry using it
-  const requiredFields = ["height"];
-  for (let i = 0; i < requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
+  let height = req.params.height;
+  //check if not an integer
+  if ( height && !isNaN(parseFloat(height)) && !isFinite(height)){
+    const message = `Missing integer as a request parameter`;
+    console.error(message);
+    return res.status(400).send(message);
+  } else {
+    res.status(204).json({ message: 'success' });
   }
+
   BlockHeight.findOne({}, (err, obj) => {
     if(obj == null){
       BlockHeight.create({
         height : req.body.height
       })
-      .then(block => res.status(200).json(block))
+      .then(block => res.status(200).send("New block entry instantiated"))
       .catch(function (err) {
         res.status(500).json({ message: "Couldn't create block entry from scratch" });
       });
     }
     else {
-      BlockHeight.findOneAndDelete({}, function (err, oldBlock){
+      BlockHeight.deleteMany({}, function(err, obj) {
         if(err) { 
           throw err; 
-        }
+        } 
         BlockHeight.create({
           height : req.body.height
         })
-        .then(block => res.status(200).json(block))
+        .then(block => res.status(204).send("New block entry instantiated"))
         .catch(function (err) {
           res.status(500).json({ message: "Couldn't create block entry from scratch" });
         });
       })
-        .catch(function (err) {
+      .catch(function (err) {
         res.status(500).json({ message: "Couldn't delete and create block entry" });
       });
     }
